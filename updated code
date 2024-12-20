@@ -1,0 +1,127 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <string>
+#include <limits>
+
+using namespace std;
+
+// Class for managing restaurant orders
+class Restaurant {
+private:
+    const int BURGER_PRICE = 200;
+    const int PIZZA_PRICE = 500;
+    const int PASTA_PRICE = 300;
+    const int FRIES_PRICE = 150;
+    const int DRINKS_PRICE = 100;
+
+    double totalBill;
+
+public:
+    Restaurant() : totalBill(0) {}
+
+    // Display the menu
+    void displayMenu() {
+        cout << "\n================= Restaurant Menu =================\n";
+        cout << "1. Burger          - Rs. 200\n";
+        cout << "2. Pizza           - Rs. 500\n";
+        cout << "3. Pasta           - Rs. 300\n";
+        cout << "4. Fries           - Rs. 150\n";
+        cout << "5. Drinks          - Rs. 100\n";
+        cout << "==================================================\n";
+    }
+
+    // Process the order
+    void processOrder(int choice, int quantity) {
+        switch (choice) {
+            case 1:
+                totalBill += BURGER_PRICE * quantity;
+                cout << "You ordered " << quantity << " Burger(s).\n";
+                break;
+            case 2:
+                totalBill += PIZZA_PRICE * quantity;
+                cout << "You ordered " << quantity << " Pizza(s).\n";
+                break;
+            case 3:
+                totalBill += PASTA_PRICE * quantity;
+                cout << "You ordered " << quantity << " Pasta(s).\n";
+                break;
+            case 4:
+                totalBill += FRIES_PRICE * quantity;
+                cout << "You ordered " << quantity << " Fries.\n";
+                break;
+            case 5:
+                totalBill += DRINKS_PRICE * quantity;
+                cout << "You ordered " << quantity << " Drink(s).\n";
+                break;
+            default:
+                cout << "Invalid menu choice. Please choose between 1 and 5.\n";
+                break;
+        }
+    }
+
+    // Save the order to a file
+    void saveReceipt() {
+        ofstream receiptFile("order_receipt.txt");
+        if (receiptFile.is_open()) {
+            receiptFile << "********* Restaurant Receipt *********\n";
+            receiptFile << "Total Bill: Rs. " << fixed << setprecision(2) << totalBill << "\n";
+            receiptFile << "Thank you for dining with us!\n";
+            receiptFile.close();
+            cout << "Your receipt has been saved to 'order_receipt.txt'.\n";
+        } else {
+            cout << "Error: Could not save receipt to file.\n";
+        }
+    }
+
+    // Display the total bill
+    void displayBill() {
+        cout << fixed << setprecision(2);
+        cout << "\nYour total bill is: Rs. " << totalBill << "\n";
+        cout << "Thank you for dining with us! Have a great day!\n";
+    }
+};
+
+// Main function
+int main() {
+    Restaurant restaurant;
+    int choice, quantity;
+    char anotherOrder;
+
+    cout << "\n********* Welcome to the Restaurant Billing System *********\n";
+
+    do {
+        // Display the menu
+        restaurant.displayMenu();
+
+        // Take the user choice
+        cout << "\nEnter the item number you want to order: ";
+        while (!(cin >> choice) || choice < 1 || choice > 5) {
+            cin.clear();  // Clear input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Ignore invalid input
+            cout << "Invalid input. Please enter a number between 1 and 5: ";
+        }
+
+        // Take quantity
+        cout << "Enter quantity: ";
+        while (!(cin >> quantity) || quantity <= 0) {
+            cin.clear();  // Clear input buffer
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Ignore invalid input
+            cout << "Invalid quantity. Please enter a positive number: ";
+        }
+
+        // Process the order
+        restaurant.processOrder(choice, quantity);
+
+        // Ask if the customer wants to order more
+        cout << "\nDo you want to order another item? (y/n): ";
+        cin >> anotherOrder;
+
+    } while (anotherOrder == 'y' || anotherOrder == 'Y');
+
+    // Display and save the total bill
+    restaurant.displayBill();
+    restaurant.saveReceipt();
+
+    return 0;
+}
